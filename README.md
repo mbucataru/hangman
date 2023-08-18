@@ -1,2 +1,2 @@
 # hangman
-A basic hangman game written in Ruby
+A program written in Ruby that allows the user to play Hangman and save/load in their games
