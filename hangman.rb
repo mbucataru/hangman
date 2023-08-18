@@ -7,6 +7,8 @@ end
 
 # Contains the logic for prompting the user to start the game
 class Game
+  @words = File.readlines('words.txt').filter { |word| (5..12).include?(word.chomp.length) }.map(&:chomp)
+
   def self.play
     input = ''
     puts 'Welcome to Hangman!'
@@ -21,9 +23,7 @@ class Game
   end
 
   def self.play_round
-    words = File.readlines('words.txt').filter { |word| (5..12).include?(word.chomp.length) }
-    word = words.map(&:chomp).sample
-    game = Hangman.new(word)
+    game = Hangman.new(@words.sample)
   end
 end
 
