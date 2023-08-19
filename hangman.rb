@@ -2,7 +2,7 @@ require 'json'
 
 # Contains the logic for Hangman
 class Hangman
-  attr_accessor :word, :display_word, :guess_count, :previous_guesses, :guess
+  attr_accessor :word, :display_word, :guess_count, :previous_guesses
 
   def initialize(input)
     initialize_with_string(input) if input.is_a?(String)
@@ -44,25 +44,34 @@ class Hangman
     indexes
   end
 
-  def play_round
-    return false if guess_count.zero? || previous_guesses.length == 6 || !display_word.include?('_')
-
+  def user_guess
     puts "You have #{guess_count} guesses left"
     puts display_word
     puts 'Enter your guess'
     puts 'If you would like to quit and save, enter QS'
-    guess = gets.chomp.downcase
-    if guess == 'qs'
-      File.write('save.json', JSON.dump(to_hash))
-      @save_status = true
-      return false
-    end
+    gets.chomp.downcase
+  end
+
+  def check_guess(guess)
     if word.include?(guess)
       indexes = find_indexes(word, guess)
       indexes.each { |index| display_word[index] = guess }
     else
       @guess_count -= 1
       previous_guesses.push(guess)
+    end
+  end
+
+  def play_round
+    return false if guess_count.zero? || previous_guesses.length == 6 || !display_word.include?('_')
+
+    guess = user_guess
+    if guess == 'qs'
+      File.write('save.json', JSON.dump(to_hash))
+      @save_status = true
+      return false
+    else
+      check_guess(guess)
     end
     true
   end
