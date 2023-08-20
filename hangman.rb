@@ -1,5 +1,3 @@
-require 'json'
-
 # Contains the logic for Hangman
 class Hangman
   attr_accessor :word, :display_word, :guess_count, :previous_guesses
@@ -56,6 +54,8 @@ class Hangman
     if word.include?(guess)
       indexes = find_indexes(word, guess)
       indexes.each { |index| display_word[index] = guess }
+    elsif previous_guesses.include?(guess)
+      puts 'You already guessed that word!'
     else
       @guess_count -= 1
       previous_guesses.push(guess)
@@ -83,41 +83,9 @@ class Hangman
     if @save_status
       puts 'Game has been saved'
     elsif display_word.include?('_')
-      puts 'You ran out of guesses :('
+      puts "You ran out of guesses :( The word was #{word}"
     else
       puts 'Congratulations! You won the game!'
     end
   end
 end
-
-# Contains the logic for prompting the user to start the game
-class Game
-  @words = File.readlines('words.txt').filter { |word| (5..12).include?(word.chomp.length) }.map(&:chomp)
-
-  def self.play
-    puts 'Welcome to Hangman!'
-    puts 'If you would like to start from scratch, press S'
-    puts 'If you would like to load your most recent save, press L'
-    sleep(4)
-    input = ''
-
-    while input != 'S' && input != 'L'
-      input = gets.chomp.upcase
-      if input == 'S'
-        Hangman.new(@words.sample).play
-      elsif input == 'L'
-        if File.exist?('save.json')
-          file = File.read('save.json')
-          hangman_hash = JSON.parse(file)
-          Hangman.new(hangman_hash).play
-        else
-          puts 'You have no save file'
-        end
-      else
-        puts 'Please type S or L'
-      end
-    end
-  end
-end
-
-Game.play
